@@ -1,0 +1,19 @@
+<zk>
+		<window id="miner"  apply="ProcessMiner.views.ChartComposer">
+			<charts id="chart" type="bar" title="Relative time spent on activities" />
+			TimeAspect: <combobox id="timeAspectBox"  model="${miner$composer.timeAspectModel}"
+					  autodrop="true">
+				<template name="model">
+					<comboitem label="${each}" />
+				</template>
+			</combobox>
+			Statistical Aspect:
+			<combobox id="statisticalAspectBox"  model="${miner$composer.statisticalAspectModel}"
+								  autodrop="true">
+			<template name="model">
+				<comboitem label="${each}" />
+			</template>
+		</combobox>
+			<checkbox id="isPercentage" label="percentage ?"> </checkbox>
+		</window>
+</zk>
