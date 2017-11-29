@@ -2,7 +2,6 @@ package ProcessMiner.models
 
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import java.util.*
 
 data class Activity(val name: String, val startTime: DateTime, val endTime: DateTime) {
     constructor(name: String, time: DateTime): this(name,time, time)
