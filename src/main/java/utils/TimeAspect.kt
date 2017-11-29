@@ -1,4 +1,4 @@
-package ProcessMiner.utils
+package utils
 
 enum class TimeAspect {
     WAITING, PROCESSING, ALL;

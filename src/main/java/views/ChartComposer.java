@@ -1,10 +1,10 @@
-package ProcessMiner.views;
+package views;
 
-import ProcessMiner.models.Process;
-import ProcessMiner.utils.ChartPreferences;
-import ProcessMiner.utils.LogParser;
-import ProcessMiner.utils.StatisticalAspect;
-import ProcessMiner.utils.TimeAspect;
+import models.Process;
+import utils.ChartPreferences;
+import utils.LogParser;
+import utils.StatisticalAspect;
+import utils.TimeAspect;
 import kotlin.Pair;
 import org.zkoss.chart.Charts;
 import org.zkoss.chart.model.CategoryModel;

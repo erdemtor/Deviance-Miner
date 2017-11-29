@@ -1,4 +1,4 @@
-package ProcessMiner.utils
+package utils
 
 enum class StatisticalAspect {
     MEAN, SUM

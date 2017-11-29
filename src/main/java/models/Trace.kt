@@ -1,4 +1,4 @@
-package ProcessMiner.models
+package models
 
 import com.google.common.collect.Lists
 import org.joda.time.Duration

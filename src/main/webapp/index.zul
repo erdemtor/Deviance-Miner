@@ -1,5 +1,5 @@
 <zk>
-		<window id="miner"  apply="ProcessMiner.views.ChartComposer">
+		<window id="miner"  apply="views.ChartComposer">
 			<charts id="chart" type="bar" title="Relative time spent on activities" />
 			TimeAspect: <combobox id="timeAspectBox"  model="${miner$composer.timeAspectModel}"
 					  autodrop="true">

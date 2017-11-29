@@ -1,9 +1,9 @@
-package ProcessMiner.utils
+package utils
 
-import ProcessMiner.models.Event
-import ProcessMiner.models.LifeCycle
-import ProcessMiner.models.Process
-import ProcessMiner.models.Trace
+import models.Event
+import models.LifeCycle
+import models.Process
+import models.Trace
 import org.deckfour.xes.`in`.XesXmlParser
 import org.deckfour.xes.model.XAttributeTimestamp
 import java.nio.file.Paths

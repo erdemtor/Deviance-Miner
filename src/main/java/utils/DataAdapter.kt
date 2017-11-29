@@ -1,4 +1,4 @@
-package ProcessMiner.utils
+package utils
 
 /**
  * Created by Erdem on 11-Nov-17.

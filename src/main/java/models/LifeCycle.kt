@@ -1,4 +1,4 @@
-package ProcessMiner.models
+package models
 
 /**
  * Created by Erdem on 11-Nov-17.

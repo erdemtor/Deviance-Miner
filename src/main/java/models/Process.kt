@@ -1,4 +1,4 @@
-package ProcessMiner.models
+package models
 
 import java.util.concurrent.TimeUnit
 

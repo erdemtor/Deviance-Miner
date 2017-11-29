@@ -1,4 +1,4 @@
-package ProcessMiner.utils
+package utils
 
 object ChartPreferences {
 
