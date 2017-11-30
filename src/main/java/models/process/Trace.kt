@@ -1,4 +1,4 @@
-package models
+package models.process
 
 import com.google.common.collect.Lists
 import org.joda.time.Duration
@@ -19,7 +19,7 @@ data class Trace(val id: String){
                         if (it.size ==2)
                             Activity(name, startTime = it[0].time, endTime = it[1].time)
                         else
-                            Activity(name,time = it[0].time)
+                            Activity(name, time = it[0].time)
                     }
         }.sortedBy { it.startTime }
 
@@ -30,15 +30,17 @@ data class Trace(val id: String){
 
     }
     val cycleTime by lazy {
-        Duration(events.first().time, events.last().time).standardSeconds
+        Duration(events.first().time, events.last().time).standardMinutes
     }
     val processingTime by lazy {  activities.map { it.processingTime }.sum() }
 
     val waitingTime  by lazy { activities.map { it.waitingTime }.sum() }
 
+    fun containsActivity(name: String) = activities.asSequence().map { it.name }.contains(name)
+    fun endsWithActivity(name: String) = activities.last().name == name
+    fun startsWithActivity(name: String) = activities.first().name == name
 
-
-
+    fun firstIndexOfActivity(name: String) =  activities.indexOfFirst { it.name == name }
 
 
 

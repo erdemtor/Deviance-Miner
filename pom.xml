@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.zkoss.chart</groupId>
 			<artifactId>zkcharts</artifactId>
-			<version>1.0.0</version>
+			<version>[1.0.0,)</version>
 		</dependency>
 		<dependency>
 			<groupId>org.zkoss.zk</groupId>
@@ -107,6 +107,11 @@
 			<groupId>org.nield</groupId>
 			<artifactId>kotlin-statistics</artifactId>
 			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.zkoss.chart</groupId>
+			<artifactId>zkcharts</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 	</dependencies>
 	<build>

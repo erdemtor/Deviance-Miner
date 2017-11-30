@@ -1,4 +1,4 @@
-package models
+package models.process
 
 /**
  * Created by Erdem on 11-Nov-17.
