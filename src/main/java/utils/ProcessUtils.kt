@@ -1,5 +1,6 @@
 package utils
 
+import models.chart.ChartPreferences
 import models.process.Event
 import models.process.LifeCycle
 import models.process.Process
@@ -17,22 +18,24 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by Erdem on 11-Nov-17.
  */
-object ProcessUtils {
+class ProcessUtils {
 
     var count = 0
 
-    fun parseFileToProcess(pathString: String): Process {
+    fun parseFileToProcess(pathString: String) {
         println("Parsing has started")
         val path = Paths.get(pathString)
         val log = XesXmlParser().parse(path.toFile()).first()
-        return fromXESLogToProcess(log)
+        variants.add(fromXESLogToProcess(log))
     }
-    fun parseInputStreamToProcess(iS: InputStream): Process {
+    fun parseInputStreamToProcess(iS: InputStream) {
         println("Parsing has started")
         val log = XesXmlParser().parse(iS).first()
-        return fromXESLogToProcess(log)
+        variants.add(fromXESLogToProcess(log))
     }
 
+    val variants: MutableList<Process> = mutableListOf()
+    var chartPreferences = ChartPreferences()
 
     fun fromXESLogToProcess(log: XLog): Process {
         val traces: List<Trace> = log.map { logTrace ->
@@ -50,7 +53,7 @@ object ProcessUtils {
 
 
 
-    fun getUniqueActivityNames(processes: List<Process>) = processes
+    fun getUniqueActivityNames() = this.variants
             .flatMap { it.traces }
             .flatMap { it.activities }
             .map { it.name }

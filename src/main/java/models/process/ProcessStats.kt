@@ -12,7 +12,7 @@ import org.nield.kotlinstatistics.descriptiveStatistics
 data class ProcessStats(private val process: Process) {
 
 
-    fun getActivityTimeMap(pref: ChartPreferences.Preferences): Map<String, Double>? {
+    fun getActivityTimeMap(pref: ChartPreferences): Map<String, Double>? {
         return when {
             pref.performanceMeasure == PROCESSING_TIME -> when {
                 pref.aggregationFunction == SUM -> return processingActivityStats.mapValues { it.value.sum }
@@ -46,7 +46,7 @@ data class ProcessStats(private val process: Process) {
 
     }
 
-    fun getActivityDescriptivesMap(pref: ChartPreferences.Preferences): Map<String, Descriptives>? {
+    fun getActivityDescriptivesMap(pref: ChartPreferences): Map<String, Descriptives>? {
         return when {
             pref.performanceMeasure == PROCESSING_TIME -> processingActivityStats
             pref.performanceMeasure == WAITING_TIME -> waitingActivityStats
