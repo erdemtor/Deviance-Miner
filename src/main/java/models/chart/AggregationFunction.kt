@@ -1,5 +1,5 @@
 package models.chart
 
-enum class StatisticalAspect {
+enum class AggregationFunction {
     MEAN, SUM, OCCURRENCE_COUNT
 }

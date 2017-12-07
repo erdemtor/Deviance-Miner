@@ -1,8 +1,8 @@
 package models.process
 
 import models.chart.ChartPreferences
-import models.chart.StatisticalAspect.*
-import models.chart.TimeAspect.*
+import models.chart.AggregationFunction.*
+import models.chart.PerformanceMeasure.*
 import org.nield.kotlinstatistics.Descriptives
 import org.nield.kotlinstatistics.descriptiveStatistics
 
@@ -12,29 +12,29 @@ import org.nield.kotlinstatistics.descriptiveStatistics
 data class ProcessStats(private val process: Process) {
 
 
-    fun getActivityTimeMap(pref: ChartPreferences): Map<String, Double>? {
+    fun getActivityTimeMap(pref: ChartPreferences.Preferences): Map<String, Double>? {
         return when {
-            pref.timeAspect == PROCESSING -> when {
-                ChartPreferences.statisticalAspect == SUM -> return processingActivityStats.mapValues { it.value.sum }
-                ChartPreferences.statisticalAspect == MEAN -> return processingActivityStats.mapValues { it.value.mean }
-                ChartPreferences.statisticalAspect == OCCURRENCE_COUNT -> return processingActivityStats.mapValues { it.value.size.toDouble() }
+            pref.performanceMeasure == PROCESSING_TIME -> when {
+                pref.aggregationFunction == SUM -> return processingActivityStats.mapValues { it.value.sum }
+                pref.aggregationFunction == MEAN -> return processingActivityStats.mapValues { it.value.mean }
+                pref.aggregationFunction == OCCURRENCE_COUNT -> return processingActivityStats.mapValues { it.value.size.toDouble() }
                 else -> {
                     null
                 }
 
             }
-            pref.timeAspect == WAITING -> when {
-                ChartPreferences.statisticalAspect == SUM -> return waitingActivityStats.mapValues { it.value.sum }
-                ChartPreferences.statisticalAspect == MEAN -> return waitingActivityStats.mapValues { it.value.mean }
-                ChartPreferences.statisticalAspect == OCCURRENCE_COUNT -> return waitingActivityStats.mapValues { it.value.size.toDouble() }
+            pref.performanceMeasure == WAITING_TIME -> when {
+                pref.aggregationFunction == SUM -> return waitingActivityStats.mapValues { it.value.sum }
+                pref.aggregationFunction == MEAN -> return waitingActivityStats.mapValues { it.value.mean }
+                pref.aggregationFunction == OCCURRENCE_COUNT -> return waitingActivityStats.mapValues { it.value.size.toDouble() }
                 else -> {
                     null
                 }
             }
-            pref.timeAspect == ALL -> when {
-                pref.statisticalAspect == SUM -> return totalActivityStats.mapValues { it.value.sum }
-                pref.statisticalAspect == MEAN -> return totalActivityStats.mapValues { it.value.mean }
-                pref.statisticalAspect == OCCURRENCE_COUNT -> return totalActivityStats.mapValues { it.value.size.toDouble() }
+            pref.performanceMeasure == CYCLE_TIME -> when {
+                pref.aggregationFunction == SUM -> return totalActivityStats.mapValues { it.value.sum }
+                pref.aggregationFunction == MEAN -> return totalActivityStats.mapValues { it.value.mean }
+                pref.aggregationFunction == OCCURRENCE_COUNT -> return totalActivityStats.mapValues { it.value.size.toDouble() }
                 else -> {
                     null
                 }
@@ -46,11 +46,11 @@ data class ProcessStats(private val process: Process) {
 
     }
 
-    fun getActivityDescriptivesMap(pref: ChartPreferences): Map<String, Descriptives>? {
+    fun getActivityDescriptivesMap(pref: ChartPreferences.Preferences): Map<String, Descriptives>? {
         return when {
-            pref.timeAspect == PROCESSING -> processingActivityStats
-            pref.timeAspect == WAITING -> waitingActivityStats
-            pref.timeAspect == ALL -> totalActivityStats
+            pref.performanceMeasure == PROCESSING_TIME -> processingActivityStats
+            pref.performanceMeasure == WAITING_TIME -> waitingActivityStats
+            pref.performanceMeasure == CYCLE_TIME -> totalActivityStats
             else -> null
         }
     }
@@ -59,7 +59,7 @@ data class ProcessStats(private val process: Process) {
     val totalActivityStats = process.traces.flatMap { it.timeTakingActivities }
             .groupBy { it.name }
             .mapValues {
-                it.value.map { it.processingTime }.descriptiveStatistics
+                it.value.map { it.waitingTime + it.processingTime }.descriptiveStatistics
             }
 
 

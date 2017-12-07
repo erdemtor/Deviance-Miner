@@ -1,6 +1,6 @@
 <zk>
 		<window id="miner"  apply="views.ChartComposer">
-			<charts id="chartBar" type="bar" title="Relative time spent on activities" />
+			<charts id="chartBar" type="bar" title="Timeline Chart" />
 		<!--	<charts id="chartBox" type="boxplot" title="BoxPlot Distribution"/>
 -->
 			TimeAspect: <combobox id="timeAspectBox"  model="${miner$composer.timeAspectModel}"
@@ -16,9 +16,14 @@
 				<comboitem label="${each}" />
 			</template>
 		</combobox>
-			<checkbox id="isPercentage" label="percentage ?"> </checkbox>
-
+			<checkbox id="isPercentage" label="relative values ?"> </checkbox>
 			<separator bar="true" />
+
+			<button id="variantUploader" label="Upload new Variant" upload="true,maxsize=100000000"/>
+
+
+
+		<!--	<separator bar="true" />
 
             Filter By:
 			<combobox id="cycleTimeFilterBox"  model="${miner$composer.cycleTimeFilters}"
@@ -63,7 +68,7 @@
 					<comboitem label="${each}" />
 				</template>
 			</combobox>
-			<button id="activityFilterButton" label="Add a new Sub-Process"></button>
+			<button id="activityFilterButton" label="Add a new Sub-Process"></button>-->
 
 		</window>
 </zk>

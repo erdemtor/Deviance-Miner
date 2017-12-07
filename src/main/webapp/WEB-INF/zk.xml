@@ -9,5 +9,9 @@
 		<value>demo</value>
 	</preference>
 	-->
-	
+	<!-- ZK Chart License -->
+	<library-property>
+		<name>org.zkoss.chart.rt.Runtime.directory</name>
+		<value>/Users/etor/Documents/zklicense/chart</value>
+	</library-property>
 </zk>
