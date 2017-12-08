@@ -11,10 +11,10 @@ data class Trace(val id: String){
     lateinit var events: List<Event>
     lateinit var activities: List<Activity>
     constructor( id :String,  events: List<Event>): this(id) {
-        this.events = events
+        this.events = events.sortedBy { it.time }
         this.activities = events.groupBy { it.name }.entries.flatMap {
             val name = it.key
-            Lists.partition(it.value,2)
+            Lists.partition(it.value.sortedBy { it.time },2)
                     .map {
                         if (it.size ==2)
                             Activity(name, startTime = it[0].time, endTime = it[1].time)

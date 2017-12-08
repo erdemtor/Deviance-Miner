@@ -26,12 +26,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -52,11 +50,19 @@ public class ChartComposer extends SelectorComposer<Window> {
     Button variantUploader;
 
     @Wire
+    Button removeVariant;
+
+    @Wire
     Combobox timeAspectBox;
     @Wire
     Checkbox isPercentage;
     @Wire
     Combobox statisticalAspectBox;
+
+
+    @Wire
+    Combobox variantsBox;
+
     
     ProcessUtils processUtils;
 
@@ -88,6 +94,13 @@ public class ChartComposer extends SelectorComposer<Window> {
     public void setStatisticalAspectModel(ListModel<String> statisticalAspectModel) {
         this.statisticalAspectModel = statisticalAspectModel;
     }
+    public ListModel<String> getActiveVariants() {
+        return activeVariants;
+    }
+
+    public void setActiveVariants(ListModel<String> activeVariants) {
+        this.activeVariants = activeVariants;
+    }
 
 
     ListModel<String> cycleTimeFilters = new ListModelList(Arrays.stream(CycleTimeFilterBy.values()).map(Object::toString).collect(toList()));
@@ -96,6 +109,9 @@ public class ChartComposer extends SelectorComposer<Window> {
     ListModel<String> activityNames = new ListModelList(this.processUtils.getUniqueActivityNames());
     ListModel<String> timeAspectModel = new ListModelList(Arrays.stream(PerformanceMeasure.values()).map(Object::toString).collect(toList()));
     ListModel<String> statisticalAspectModel = new ListModelList(Arrays.stream(AggregationFunction.values()).map(Object::toString).collect(toList()));
+
+
+    ListModel<String> activeVariants = new ListModelList(this.processUtils.getVariants().stream().map(Process::getName).collect(toList()));
 
 
     public ListModel<String> getCycleTimeFilters() {
@@ -143,7 +159,8 @@ public class ChartComposer extends SelectorComposer<Window> {
             targetStream = event.getMedia().getStreamData();
 
         }
-        this.processUtils.parseInputStreamToProcess(targetStream);
+        System.out.println(event.getMedia().getName());
+        this.processUtils.parseInputStreamToProcess(targetStream, event.getMedia().getName());
         updatePreferences(event);
 
     }
@@ -151,6 +168,14 @@ public class ChartComposer extends SelectorComposer<Window> {
     private void updateSessionData(){
 
         Sessions.getCurrent().setAttribute(ProcessDetails, this.processUtils);
+    }
+
+    private void removeVariant(Event event) {
+        if (variantsBox.getSelectedItem() != null){
+            this.processUtils.removeVariant(variantsBox.getSelectedItem().getLabel());
+            updatePreferences(event);
+        }
+
     }
 
 
@@ -195,6 +220,7 @@ public class ChartComposer extends SelectorComposer<Window> {
         timeAspectBox.addEventListener("onChange", this::updatePreferences);
         statisticalAspectBox.addEventListener("onChange", this::updatePreferences);
         isPercentage.addEventListener("onCheck", this::updatePreferences);
+        removeVariant.addEventListener("onClick", this::removeVariant);
         variantUploader.addEventListener("onUpload", (EventListener<UploadEvent>) event -> addVariant(event));
         ((ListModelList<String>) timeAspectModel).addToSelection(chartPreferences.getPerformanceMeasure().toString());
         ((ListModelList<String>) statisticalAspectModel).addToSelection(chartPreferences.getAggregationFunction().toString());
@@ -212,7 +238,11 @@ public class ChartComposer extends SelectorComposer<Window> {
         CategoryModel model = arrangeDataWithRespectToChartPreferencesForBarChart();
         chartBar.setModel(model);
         chartBar.getYAxis().setMin(0);
-        chartBar.getYAxis().setTitle(chartPreferences.getPercentage() ? "Percentage" : "Stacking" + " of Total Time Spent");
+        chartBar.getYAxis()
+                .setTitle((chartPreferences.getPercentage() ? "Percentage of " : "Stacking of ") +
+                        chartPreferences.getAggregationFunction().toString().replace('_', ' ').toLowerCase()
+                        + " "
+                        + chartPreferences.getPerformanceMeasure().toString().replace('_', ' ').toLowerCase() );
         chartBar.getLegend().setReversed(true);
         chartBar.getPlotOptions().getSeries().setStacking(chartPreferences.getPercentage() ? "percent" : "normal");
         chartBar.getCredits().setEnabled(false);

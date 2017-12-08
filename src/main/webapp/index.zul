@@ -20,55 +20,65 @@
 			<separator bar="true" />
 
 			<button id="variantUploader" label="Upload new Variant" upload="true,maxsize=100000000"/>
-
-
-
-		<!--	<separator bar="true" />
-
-            Filter By:
-			<combobox id="cycleTimeFilterBox"  model="${miner$composer.cycleTimeFilters}"
-					  constraint="no empty"
-					  autodrop="true">
-				<template name="model">
-					<comboitem label="${each}" />
-				</template>
-			</combobox>
-
-
-			<longbox id="cycleTimeFilteringLongBox" value="0"
-					format="000000" constraint="no empty,no negative" />
-
-			<combobox id="timeUnitBox"  model="${miner$composer.cycleTimeUnits}"
-					  constraint="no empty"
-					  autodrop="true">
-				<template name="model">
-					<comboitem label="${each}" />
-				</template>
-			</combobox>
-
-			<button id="timeFilterButton" label="Add a new Sub-Process"></button>
-
-
-
-
 			<separator bar="true" />
-			Filter By:
-			<combobox id="activityNameFilterBox"  model="${miner$composer.activityFilters}"
-					  constraint="no empty"
+
+			Variants
+			<combobox id="variantsBox"  model="${miner$composer.activeVariants}"
 					  autodrop="true">
-				<template name="model">
-					<comboitem label="${each}" />
-				</template>
+			<template name="model">
+				<comboitem label="${each}" />
+			</template>
 			</combobox>
 
-			<combobox id="activityNameBox"  model="${miner$composer.activityNames}"
-					  constraint="no empty"
-					  autodrop="true">
-				<template name="model">
-					<comboitem label="${each}" />
-				</template>
-			</combobox>
-			<button id="activityFilterButton" label="Add a new Sub-Process"></button>-->
+			<button id="removeVariant" label="Remove Selected Variant"/>
+
+
+			<!--	<separator bar="true" />
+
+                Filter By:
+                <combobox id="cycleTimeFilterBox"  model="${miner$composer.cycleTimeFilters}"
+                          constraint="no empty"
+                          autodrop="true">
+                    <template name="model">
+                        <comboitem label="${each}" />
+                    </template>
+                </combobox>
+
+
+                <longbox id="cycleTimeFilteringLongBox" value="0"
+                        format="000000" constraint="no empty,no negative" />
+
+                <combobox id="timeUnitBox"  model="${miner$composer.cycleTimeUnits}"
+                          constraint="no empty"
+                          autodrop="true">
+                    <template name="model">
+                        <comboitem label="${each}" />
+                    </template>
+                </combobox>
+
+                <button id="timeFilterButton" label="Add a new Sub-Process"></button>
+
+
+
+
+                <separator bar="true" />
+                Filter By:
+                <combobox id="activityNameFilterBox"  model="${miner$composer.activityFilters}"
+                          constraint="no empty"
+                          autodrop="true">
+                    <template name="model">
+                        <comboitem label="${each}" />
+                    </template>
+                </combobox>
+
+                <combobox id="activityNameBox"  model="${miner$composer.activityNames}"
+                          constraint="no empty"
+                          autodrop="true">
+                    <template name="model">
+                        <comboitem label="${each}" />
+                    </template>
+                </combobox>
+                <button id="activityFilterButton" label="Add a new Sub-Process"></button>-->
 
 		</window>
 </zk>

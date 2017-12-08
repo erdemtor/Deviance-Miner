@@ -22,22 +22,22 @@ class ProcessUtils {
 
     var count = 0
 
-    fun parseFileToProcess(pathString: String) {
+    fun parseFileToProcess(pathString: String, name: String) {
         println("Parsing has started")
         val path = Paths.get(pathString)
         val log = XesXmlParser().parse(path.toFile()).first()
-        variants.add(fromXESLogToProcess(log))
+        variants.add(fromXESLogToProcess(log, name))
     }
-    fun parseInputStreamToProcess(iS: InputStream) {
+    fun parseInputStreamToProcess(iS: InputStream, name: String) {
         println("Parsing has started")
         val log = XesXmlParser().parse(iS).first()
-        variants.add(fromXESLogToProcess(log))
+        variants.add(fromXESLogToProcess(log, name))
     }
 
     val variants: MutableList<Process> = mutableListOf()
     var chartPreferences = ChartPreferences()
 
-    fun fromXESLogToProcess(log: XLog): Process {
+    fun fromXESLogToProcess(log: XLog, name: String): Process {
         val traces: List<Trace> = log.map { logTrace ->
             val events = logTrace.asSequence().filter { isStartOrCompleteEvent(it.attributes["lifecycle:transition"].toString()) }.map{
                 Event(it.attributes["concept:name"].toString(),
@@ -48,7 +48,11 @@ class ProcessUtils {
         }
 
         println("Parsing completed")
-        return Process(traces, count++.toString())
+        return Process(traces, name.split(".").first())
+    }
+
+    fun removeVariant(name: String) {
+        this.variants.removeIf{ it.name == name}
     }
 
 
