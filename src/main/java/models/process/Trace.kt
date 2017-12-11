@@ -1,6 +1,7 @@
 package models.process
 
 import com.google.common.collect.Lists
+import models.chart.TimeUnit
 import org.apache.commons.math3.ml.clustering.Clusterable
 import org.joda.time.Duration
 
@@ -21,6 +22,13 @@ data class Trace(val id: String) : Clusterable{
     lateinit var events: List<Event>
     lateinit var activities: List<Activity>
     lateinit var process: Process
+    var timeUnit: TimeUnit = TimeUnit.MINUTES
+    var cycleTime: Long = 0
+    fun updateTimeUnit(newTimeUnit: TimeUnit){
+        cycleTime = Duration(events.first().time, events.last().time).convertTo(timeUnit)
+        activities.forEach{it.updateTimeUnit(newTimeUnit)}
+
+    }
 
     constructor( id :String,  events: List<Event>): this(id) {
         this.events = events.sortedBy { it.time }
@@ -38,14 +46,13 @@ data class Trace(val id: String) : Clusterable{
         activities.zip(activities.drop(1)).forEach {
             it.second.updateEnablementTime(it.first.endTime)
         }
-
+        cycleTime = Duration(events.first().time, events.last().time).convertTo(timeUnit)
     }
 
 
 
-    val cycleTime by lazy {
-        Duration(events.first().time, events.last().time).standardMinutes
-    }
+
+
     val processingTime by lazy {  activities.map { it.processingTime }.sum() }
 
     val waitingTime  by lazy { activities.map { it.waitingTime }.sum() }

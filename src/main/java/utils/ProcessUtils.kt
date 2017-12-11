@@ -43,8 +43,12 @@ class ProcessUtils {
 
 
 
-    fun updateClusterCount(k: Int){
-        this.variants = mainVariants.mapValues {it.value.getClusterVariants(k) }.toMutableMap()
+    fun updateClusterCount(){
+        this.variants = mainVariants.mapValues {it.value.getClusterVariants(chartPreferences.clusterCount) }.toMutableMap()
+    }
+
+    fun updateTimeUnit(){
+        this.variants.values.flatMap { it }.forEach{it.updateTimeUnits(chartPreferences.timeUnit)}
     }
 
 

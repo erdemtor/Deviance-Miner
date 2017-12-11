@@ -1,18 +1,16 @@
 package models.process
 
+import models.chart.TimeUnit
 import models.process.filtering.ActivityFilterBy
-import java.util.concurrent.TimeUnit
 import models.process.filtering.ActivityFilterBy.*
-import models.process.filtering.CycleTimeFilterBy
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer
-import org.apache.commons.math3.ml.distance.DistanceMeasure
 
 /**
  * Created by Erdem on 11-Nov-17.
  */
 data class Process(val traces: List<Trace>, val name: String) {
 
-    val stats: ProcessStats
+    var stats: ProcessStats
     val activityIndexMap: Map<String, Int>
 
     init {
@@ -20,6 +18,13 @@ data class Process(val traces: List<Trace>, val name: String) {
         stats = ProcessStats(this)
 
     }
+
+    fun updateTimeUnits(newUnit: TimeUnit){
+        this.traces.forEach{it.updateTimeUnit(newUnit)}
+        stats = ProcessStats(this)
+
+    }
+
 
     fun getClusterVariants(k: Int = 3): List<Process> {
         traces.forEach { it.process = this }
@@ -35,14 +40,6 @@ data class Process(val traces: List<Trace>, val name: String) {
     }
 
 
-    fun partitionProcessByCycleTime(numericalValue: Long, unit: TimeUnit, filterBy: CycleTimeFilterBy): Pair<Process, Process> {
-        val cycleTimeInMinutes = unit.toMinutes(numericalValue)
-        val (normal, deviant) = when (filterBy) {
-            CycleTimeFilterBy.LESS_THAN -> traces.partition { it.cycleTime < cycleTimeInMinutes }
-            CycleTimeFilterBy.GREATER_THAN -> traces.partition { it.cycleTime > cycleTimeInMinutes }
-        }
-        return Pair(Process(normal, filterBy.toString().toLowerCase() + " " + numericalValue + " " + unit.toString().toLowerCase()), Process(deviant, "not_used"))
-    }
 
     fun partitionProcessByActivityCriterion(activityName: String, criterion: ActivityFilterBy): Pair<Process, Process> {
         val (passing, failing) = when (criterion) {

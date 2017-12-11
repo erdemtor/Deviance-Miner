@@ -26,7 +26,20 @@
 					<comboitem label="${each}" />
 				</template>
 			</combobox>
+
+
+
 			<separator  />
+			Time Unit:
+			<combobox id="timeUnitBox"  model="${miner$composer.timeUnitModel}"
+					  autodrop="true">
+				<template name="model">
+					<comboitem label="${each}" />
+				</template>
+			</combobox>
+			<separator/>
+
+
 			<checkbox id="isPercentage" label="relative values ?"> </checkbox>
 
 

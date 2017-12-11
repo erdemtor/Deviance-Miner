@@ -5,6 +5,7 @@ import com.google.common.io.CharStreams;
 import models.chart.AggregationFunction;
 import models.chart.ChartPreferences;
 import models.chart.PerformanceMeasure;
+import models.chart.TimeUnit;
 import models.process.Process;
 import models.process.filtering.ActivityFilterBy;
 import models.process.filtering.CycleTimeFilterBy;
@@ -29,7 +30,6 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -58,6 +58,8 @@ public class ChartComposer extends SelectorComposer<Window> {
     Combobox statisticalAspectBox;
     @Wire
     Combobox clusterCountBox;
+    @Wire
+    Combobox timeUnitBox;
 
     @Wire
     Combobox variantsBox;
@@ -104,14 +106,22 @@ public class ChartComposer extends SelectorComposer<Window> {
 
     ListModel<String> cycleTimeFilters = new ListModelList(Arrays.stream(CycleTimeFilterBy.values()).map(Object::toString).collect(toList()));
     ListModel<String> activityFilters = new ListModelList(Arrays.stream(ActivityFilterBy.values()).map(Object::toString).collect(toList()));
-    ListModel<String> cycleTimeUnits = new ListModelList(Arrays.stream(TimeUnit.values()).map(Object::toString).collect(toList()));
    // ListModel<String> activityNames = new ListModelList(this.processUtils.getUniqueActivityNames());
     ListModel<String> timeAspectModel = new ListModelList(Arrays.stream(PerformanceMeasure.values()).map(Object::toString).collect(toList()));
     ListModel<String> statisticalAspectModel = new ListModelList(Arrays.stream(AggregationFunction.values()).map(Object::toString).collect(toList()));
+    ListModel<String> timeUnitModel = new ListModelList(Arrays.stream(models.chart.TimeUnit.values()).map(Object::toString).collect(toList()));
     ListModel<Integer> oneToTwenty = new ListModelList(IntStream.rangeClosed(1, 20).boxed().collect(toList()));
 
 
     ListModel<String> activeVariants = new ListModelList(this.processUtils.getVariants().keySet().stream().map(Object::toString).collect(toList()));
+
+    public void setTimeUnitModel(ListModel<String> timeUnitModel) {
+        this.timeUnitModel = timeUnitModel;
+    }
+
+    public ListModel<String> getTimeUnitModel() {
+        return timeUnitModel;
+    }
 
     public ListModel<Integer> getOneToTwenty() {
         return oneToTwenty;
@@ -137,13 +147,7 @@ public class ChartComposer extends SelectorComposer<Window> {
         this.activityFilters = activityFilters;
     }
 
-    public ListModel<String> getCycleTimeUnits() {
-        return cycleTimeUnits;
-    }
 
-    public void setCycleTimeUnits(ListModel<String> cycleTimeUnits) {
-        this.cycleTimeUnits = cycleTimeUnits;
-    }
 
 
 
@@ -221,19 +225,29 @@ public class ChartComposer extends SelectorComposer<Window> {
         statisticalAspectBox.addEventListener("onChange", this::updatePreferences);
         isPercentage.addEventListener("onCheck", this::updatePreferences);
         clusterCountBox.addEventListener("onChange", this::updateClusterCount);
+        timeUnitBox.addEventListener("onChange", this::updateTimeUnit);
         removeVariant.addEventListener("onClick", this::removeVariant);
         variantUploader.addEventListener("onUpload", (EventListener<UploadEvent>) event -> addVariant(event));
         ((ListModelList<String>) timeAspectModel).addToSelection(chartPreferences.getPerformanceMeasure().toString());
         ((ListModelList<String>) statisticalAspectModel).addToSelection(chartPreferences.getAggregationFunction().toString());
+        ((ListModelList<String>) timeUnitModel).addToSelection(chartPreferences.getTimeUnit().toString());
         ((ListModelList<Integer>) oneToTwenty).addToSelection(chartPreferences.getClusterCount());
         isPercentage.setChecked(chartPreferences.getPercentage());
+    }
+
+    private void updateTimeUnit(Event event) {
+        ChartPreferences chartPreferences = processUtils.getChartPreferences();
+        TimeUnit newTimeUnit = TimeUnit.valueOf(timeUnitBox.getSelectedItem().getLabel());
+        chartPreferences.setTimeUnit(newTimeUnit);
+        processUtils.updateTimeUnit();
+        updatePreferences(event);
     }
 
     private void updateClusterCount(Event event) {
         ChartPreferences chartPreferences = processUtils.getChartPreferences();
         int preferredClusterCount = Integer.parseInt(clusterCountBox.getSelectedItem().getLabel());
         chartPreferences.setClusterCount(preferredClusterCount);
-        processUtils.updateClusterCount(preferredClusterCount);
+        processUtils.updateClusterCount();
         updatePreferences(event);
     }
 
