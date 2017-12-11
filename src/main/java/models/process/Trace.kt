@@ -23,7 +23,7 @@ data class Trace(val id: String) : Clusterable{
     lateinit var activities: List<Activity>
     lateinit var process: Process
     var timeUnit: TimeUnit = TimeUnit.MINUTES
-    var cycleTime: Long = 0
+    var cycleTime: Double = 0.0
     fun updateTimeUnit(newTimeUnit: TimeUnit){
         cycleTime = Duration(events.first().time, events.last().time).convertTo(timeUnit)
         activities.forEach{it.updateTimeUnit(newTimeUnit)}
