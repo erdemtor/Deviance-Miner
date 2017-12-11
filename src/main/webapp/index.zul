@@ -1,27 +1,41 @@
 <zk>
 		<window id="miner"  apply="views.ChartComposer">
+			<zk forEach=""></zk>
 			<charts id="chartBar" type="bar" title="Timeline Chart" />
 		<!--	<charts id="chartBox" type="boxplot" title="BoxPlot Distribution"/>
 -->
-			TimeAspect: <combobox id="timeAspectBox"  model="${miner$composer.timeAspectModel}"
+			Performance Measure: <combobox id="timeAspectBox"  model="${miner$composer.timeAspectModel}"
 					  autodrop="true">
 				<template name="model">
 					<comboitem label="${each}" />
 				</template>
 			</combobox>
-			Statistical Aspect:
+			<separator />
+			Aggregation Function:
 			<combobox id="statisticalAspectBox"  model="${miner$composer.statisticalAspectModel}"
 								  autodrop="true">
 			<template name="model">
 				<comboitem label="${each}" />
 			</template>
 		</combobox>
+			<separator  />
+           Cluster Count:
+			<combobox id="clusterCountBox"  model="${miner$composer.oneToTwenty}"
+					  autodrop="true">
+				<template name="model">
+					<comboitem label="${each}" />
+				</template>
+			</combobox>
+			<separator  />
 			<checkbox id="isPercentage" label="relative values ?"> </checkbox>
-			<separator bar="true" />
+
+
+			<separator bar="true" /><separator bar="true" />
 
 			<button id="variantUploader" label="Upload new Variant" upload="true,maxsize=100000000"/>
-			<separator bar="true" />
 
+
+			<separator/>
 			Variants
 			<combobox id="variantsBox"  model="${miner$composer.activeVariants}"
 					  autodrop="true">

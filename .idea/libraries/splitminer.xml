@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="splitminer">
+    <CLASSES>
+      <root url="file://$USER_HOME$/Downloads/splitminer" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$USER_HOME$/Downloads/splitminer" recursive="false" />
+  </library>
+</component>

@@ -1,15 +1,27 @@
 package models.process
 
 import com.google.common.collect.Lists
+import org.apache.commons.math3.ml.clustering.Clusterable
 import org.joda.time.Duration
 
 /**
  * Created by Erdem on 11-Nov-17.
  */
-data class Trace(val id: String){
+data class Trace(val id: String) : Clusterable{
+
+    override fun getPoint(): DoubleArray {
+        val doubleArray = DoubleArray(process.activityIndexMap.size)
+        this.activities.groupingBy { it.name }.eachCount().forEach{
+            name, count ->
+                doubleArray[process.activityIndexMap[name]!!] = count.toDouble()
+        }
+        return doubleArray
+    }
 
     lateinit var events: List<Event>
     lateinit var activities: List<Activity>
+    lateinit var process: Process
+
     constructor( id :String,  events: List<Event>): this(id) {
         this.events = events.sortedBy { it.time }
         this.activities = events.groupBy { it.name }.entries.flatMap {
@@ -27,8 +39,10 @@ data class Trace(val id: String){
             it.second.updateEnablementTime(it.first.endTime)
         }
 
-
     }
+
+
+
     val cycleTime by lazy {
         Duration(events.first().time, events.last().time).standardMinutes
     }

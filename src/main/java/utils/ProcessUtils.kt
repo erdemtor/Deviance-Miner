@@ -26,15 +26,31 @@ class ProcessUtils {
         println("Parsing has started")
         val path = Paths.get(pathString)
         val log = XesXmlParser().parse(path.toFile()).first()
-        variants.add(fromXESLogToProcess(log, name))
+        val parsedVariant = fromXESLogToProcess(log, name)
+        val clusterVariants = parsedVariant.getClusterVariants(k = chartPreferences.clusterCount)
+        variants[name] = clusterVariants
+        mainVariants[name] = parsedVariant
     }
     fun parseInputStreamToProcess(iS: InputStream, name: String) {
         println("Parsing has started")
         val log = XesXmlParser().parse(iS).first()
-        variants.add(fromXESLogToProcess(log, name))
+        val parsedVariant = fromXESLogToProcess(log, name)
+        val clusterVariants = parsedVariant.getClusterVariants(k = chartPreferences.clusterCount)
+        variants[name] = clusterVariants
+        mainVariants[name] = parsedVariant
     }
 
-    val variants: MutableList<Process> = mutableListOf()
+
+
+
+    fun updateClusterCount(k: Int){
+        this.variants = mainVariants.mapValues {it.value.getClusterVariants(k) }.toMutableMap()
+    }
+
+
+
+    var variants: MutableMap<String, List<Process>> = mutableMapOf()
+    private val mainVariants: MutableMap<String, Process> = mutableMapOf()
     var chartPreferences = ChartPreferences()
 
     fun fromXESLogToProcess(log: XLog, name: String): Process {
@@ -52,19 +68,8 @@ class ProcessUtils {
     }
 
     fun removeVariant(name: String) {
-        this.variants.removeIf{ it.name == name}
+        this.variants.remove(name)
     }
-
-
-
-    fun getUniqueActivityNames() = this.variants
-            .flatMap { it.traces }
-            .flatMap { it.activities }
-            .map { it.name }
-            .distinct()
-            .sorted()
-
-
 
 
 

@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -38,9 +39,6 @@ public class ChartComposer extends SelectorComposer<Window> {
     private final String ProcessDetails = "ProcessDetails";
 
 
-
-    @Wire
-    Charts chartBox;
     @Wire
     Charts chartBar;
     @Wire
@@ -58,7 +56,8 @@ public class ChartComposer extends SelectorComposer<Window> {
     Checkbox isPercentage;
     @Wire
     Combobox statisticalAspectBox;
-
+    @Wire
+    Combobox clusterCountBox;
 
     @Wire
     Combobox variantsBox;
@@ -106,13 +105,21 @@ public class ChartComposer extends SelectorComposer<Window> {
     ListModel<String> cycleTimeFilters = new ListModelList(Arrays.stream(CycleTimeFilterBy.values()).map(Object::toString).collect(toList()));
     ListModel<String> activityFilters = new ListModelList(Arrays.stream(ActivityFilterBy.values()).map(Object::toString).collect(toList()));
     ListModel<String> cycleTimeUnits = new ListModelList(Arrays.stream(TimeUnit.values()).map(Object::toString).collect(toList()));
-    ListModel<String> activityNames = new ListModelList(this.processUtils.getUniqueActivityNames());
+   // ListModel<String> activityNames = new ListModelList(this.processUtils.getUniqueActivityNames());
     ListModel<String> timeAspectModel = new ListModelList(Arrays.stream(PerformanceMeasure.values()).map(Object::toString).collect(toList()));
     ListModel<String> statisticalAspectModel = new ListModelList(Arrays.stream(AggregationFunction.values()).map(Object::toString).collect(toList()));
+    ListModel<Integer> oneToTwenty = new ListModelList(IntStream.rangeClosed(1, 20).boxed().collect(toList()));
 
 
-    ListModel<String> activeVariants = new ListModelList(this.processUtils.getVariants().stream().map(Process::getName).collect(toList()));
+    ListModel<String> activeVariants = new ListModelList(this.processUtils.getVariants().keySet().stream().map(Object::toString).collect(toList()));
 
+    public ListModel<Integer> getOneToTwenty() {
+        return oneToTwenty;
+    }
+
+    public void setOneToTwenty(ListModel<Integer> oneToTwenty) {
+        this.oneToTwenty = oneToTwenty;
+    }
 
     public ListModel<String> getCycleTimeFilters() {
         return cycleTimeFilters;
@@ -138,13 +145,6 @@ public class ChartComposer extends SelectorComposer<Window> {
         this.cycleTimeUnits = cycleTimeUnits;
     }
 
-    public ListModel<String> getActivityNames() {
-        return activityNames;
-    }
-
-    public void setActivityNames(ListModel<String> activityNames) {
-        this.activityNames = activityNames;
-    }
 
 
     private void addVariant(UploadEvent event) throws IOException {
@@ -195,10 +195,10 @@ public class ChartComposer extends SelectorComposer<Window> {
 
     private CategoryModel arrangeDataWithRespectToChartPreferencesForBarChart() {
         CategoryModel model = new DefaultCategoryModel();
-        List<Process> subProcesses = this.processUtils.getVariants();
+        Map<String, List<Process>> subProcesses = this.processUtils.getVariants();
         ChartPreferences chartPreferences = processUtils.getChartPreferences();
 
-        subProcesses.forEach(process -> {
+        subProcesses.forEach((name, processes) -> processes.forEach(process -> {
             Map<String, Double> activityTime = process.getStats().getActivityTimeMap(chartPreferences);
             process.getStats()
                     .getActivityMFOI()
@@ -206,7 +206,7 @@ public class ChartComposer extends SelectorComposer<Window> {
                     .stream()
                     .map(Map.Entry::getKey)
                     .forEach((String activity) -> model.setValue(activity, process.getName(), activityTime.get(activity)));
-        });
+        }));
 
 
         return model;
@@ -220,14 +220,22 @@ public class ChartComposer extends SelectorComposer<Window> {
         timeAspectBox.addEventListener("onChange", this::updatePreferences);
         statisticalAspectBox.addEventListener("onChange", this::updatePreferences);
         isPercentage.addEventListener("onCheck", this::updatePreferences);
+        clusterCountBox.addEventListener("onChange", this::updateClusterCount);
         removeVariant.addEventListener("onClick", this::removeVariant);
         variantUploader.addEventListener("onUpload", (EventListener<UploadEvent>) event -> addVariant(event));
         ((ListModelList<String>) timeAspectModel).addToSelection(chartPreferences.getPerformanceMeasure().toString());
         ((ListModelList<String>) statisticalAspectModel).addToSelection(chartPreferences.getAggregationFunction().toString());
+        ((ListModelList<Integer>) oneToTwenty).addToSelection(chartPreferences.getClusterCount());
         isPercentage.setChecked(chartPreferences.getPercentage());
     }
 
-
+    private void updateClusterCount(Event event) {
+        ChartPreferences chartPreferences = processUtils.getChartPreferences();
+        int preferredClusterCount = Integer.parseInt(clusterCountBox.getSelectedItem().getLabel());
+        chartPreferences.setClusterCount(preferredClusterCount);
+        processUtils.updateClusterCount(preferredClusterCount);
+        updatePreferences(event);
+    }
 
 
     public void doAfterCompose(Window comp) throws Exception {

@@ -8,6 +8,7 @@ class ChartPreferences {
     var performanceMeasure: PerformanceMeasure = PerformanceMeasure.CYCLE_TIME
     var aggregationFunction: AggregationFunction = AggregationFunction.SUM
     var percentage = true
+    var clusterCount: Int = 3
 
 
 }
