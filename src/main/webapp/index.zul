@@ -1,111 +1,130 @@
 <zk>
-		<window id="miner"  apply="views.ChartComposer">
-			<zk forEach=""></zk>
-			<charts id="chartBar" type="bar" title="Timeline Chart" />
-		<!--	<charts id="chartBox" type="boxplot" title="BoxPlot Distribution"/>
+    <window id="miner" apply="views.ChartComposer">
+        <zk forEach=""></zk>
+        <charts id="chartBar" type="bar" title="Timeline Chart"/>
+        <!--	<charts id="chartBox" type="boxplot" title="BoxPlot Distribution"/>
 -->
-			Performance Measure: <combobox id="timeAspectBox"  model="${miner$composer.timeAspectModel}"
-					  autodrop="true">
-				<template name="model">
-					<comboitem label="${each}" />
-				</template>
-			</combobox>
-			<separator />
-			Aggregation Function:
-			<combobox id="statisticalAspectBox"  model="${miner$composer.statisticalAspectModel}"
-								  autodrop="true">
-			<template name="model">
-				<comboitem label="${each}" />
-			</template>
-		</combobox>
-			<separator  />
-           Cluster Count:
-			<combobox id="clusterCountBox"  model="${miner$composer.oneToTwenty}"
-					  autodrop="true">
-				<template name="model">
-					<comboitem label="${each}" />
-				</template>
-			</combobox>
+
+
+        <div align="center">
+            <grid width="50%">
+                <auxhead>
+                    <auxheader colspan="2" label="Chart Preferences"/>
+                </auxhead>
+                <rows>
+                    <row >
+                        <label value="Performance Measure:"/>
+                        <combobox id="timeAspectBox" model="${miner$composer.timeAspectModel}"
+                                  autodrop="true">
+                            <template name="model">
+                                <comboitem label="${each}"/>
+                            </template>
+                        </combobox>
+                    </row>
+                    <row >
+
+                    <label value="Aggregation Function:"/>
+                        <combobox id="statisticalAspectBox" model="${miner$composer.statisticalAspectModel}"
+                                  autodrop="true">
+                            <template name="model">
+                                <comboitem label="${each}"/>
+                            </template>
+                        </combobox>
+                    </row>
+                    <row >
+
+                    <label value="Cluster Count:"/>
+                        <combobox id="clusterCountBox" model="${miner$composer.oneToTwenty}"
+                                  autodrop="true">
+                            <template name="model">
+                                <comboitem label="${each}"/>
+                            </template>
+                        </combobox>
+                    </row>
+                    <row >
+
+                    <label value="Time Unit:"/>
+                        <combobox id="timeUnitBox" model="${miner$composer.timeUnitModel}"
+                                  autodrop="true">
+                            <template name="model">
+                                <comboitem label="${each}"/>
+                            </template>
+                        </combobox>
+                    </row>
+                    <row >
+
+                    <label value="Relative values?"></label>
+                        <checkbox id="isPercentage"></checkbox>
+                    </row>
+                    <row >
+
+                    <label value="Add a new Variant"/>
+                        <button id="variantUploader" label="Choose File" upload="true,maxsize=100000000"/>
+                    </row>
+                    <row >
+
+                    <combobox id="variantsBox" model="${miner$composer.activeVariants}"
+                                  autodrop="true">
+                            <template name="model">
+                                <comboitem label="${each}"/>
+                            </template>
+                        </combobox>
+
+                        <button id="removeVariant" label="Remove Selected Variant"/>
+                    </row>
+
+                </rows>
+
+
+            </grid>
+        </div>
+
+        <!--	<separator bar="true" />
+
+            Filter By:
+            <combobox id="cycleTimeFilterBox"  model="${miner$composer.cycleTimeFilters}"
+                      constraint="no empty"
+                      autodrop="true">
+                <template name="model">
+                    <comboitem label="${each}" />
+                </template>
+            </combobox>
+
+
+            <longbox id="cycleTimeFilteringLongBox" value="0"
+                    format="000000" constraint="no empty,no negative" />
+
+            <combobox id="timeUnitBox"  model="${miner$composer.cycleTimeUnits}"
+                      constraint="no empty"
+                      autodrop="true">
+                <template name="model">
+                    <comboitem label="${each}" />
+                </template>
+            </combobox>
+
+            <button id="timeFilterButton" label="Add a new Sub-Process"></button>
 
 
 
-			<separator  />
-			Time Unit:
-			<combobox id="timeUnitBox"  model="${miner$composer.timeUnitModel}"
-					  autodrop="true">
-				<template name="model">
-					<comboitem label="${each}" />
-				</template>
-			</combobox>
-			<separator/>
 
+            <separator bar="true" />
+            Filter By:
+            <combobox id="activityNameFilterBox"  model="${miner$composer.activityFilters}"
+                      constraint="no empty"
+                      autodrop="true">
+                <template name="model">
+                    <comboitem label="${each}" />
+                </template>
+            </combobox>
 
-			<checkbox id="isPercentage" label="relative values ?"> </checkbox>
+            <combobox id="activityNameBox"  model="${miner$composer.activityNames}"
+                      constraint="no empty"
+                      autodrop="true">
+                <template name="model">
+                    <comboitem label="${each}" />
+                </template>
+            </combobox>
+            <button id="activityFilterButton" label="Add a new Sub-Process"></button>-->
 
-
-			<separator bar="true" /><separator bar="true" />
-
-			<button id="variantUploader" label="Upload new Variant" upload="true,maxsize=100000000"/>
-
-
-			<separator/>
-			Variants
-			<combobox id="variantsBox"  model="${miner$composer.activeVariants}"
-					  autodrop="true">
-			<template name="model">
-				<comboitem label="${each}" />
-			</template>
-			</combobox>
-
-			<button id="removeVariant" label="Remove Selected Variant"/>
-
-
-			<!--	<separator bar="true" />
-
-                Filter By:
-                <combobox id="cycleTimeFilterBox"  model="${miner$composer.cycleTimeFilters}"
-                          constraint="no empty"
-                          autodrop="true">
-                    <template name="model">
-                        <comboitem label="${each}" />
-                    </template>
-                </combobox>
-
-
-                <longbox id="cycleTimeFilteringLongBox" value="0"
-                        format="000000" constraint="no empty,no negative" />
-
-                <combobox id="timeUnitBox"  model="${miner$composer.cycleTimeUnits}"
-                          constraint="no empty"
-                          autodrop="true">
-                    <template name="model">
-                        <comboitem label="${each}" />
-                    </template>
-                </combobox>
-
-                <button id="timeFilterButton" label="Add a new Sub-Process"></button>
-
-
-
-
-                <separator bar="true" />
-                Filter By:
-                <combobox id="activityNameFilterBox"  model="${miner$composer.activityFilters}"
-                          constraint="no empty"
-                          autodrop="true">
-                    <template name="model">
-                        <comboitem label="${each}" />
-                    </template>
-                </combobox>
-
-                <combobox id="activityNameBox"  model="${miner$composer.activityNames}"
-                          constraint="no empty"
-                          autodrop="true">
-                    <template name="model">
-                        <comboitem label="${each}" />
-                    </template>
-                </combobox>
-                <button id="activityFilterButton" label="Add a new Sub-Process"></button>-->
-
-		</window>
+    </window>
 </zk>

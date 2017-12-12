@@ -9,7 +9,7 @@ class ChartPreferences {
     var aggregationFunction: AggregationFunction = AggregationFunction.SUM
     var timeUnit: TimeUnit = TimeUnit.MINUTES
     var percentage = true
-    var clusterCount: Int = 3
+    var clusterCount: Int = 1
 
 
 }
