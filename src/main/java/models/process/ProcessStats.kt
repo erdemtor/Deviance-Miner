@@ -4,13 +4,30 @@ import models.chart.AggregationFunction.MEAN
 import models.chart.AggregationFunction.SUM
 import models.chart.ChartPreferences
 import models.chart.PerformanceMeasure.*
+import org.jgrapht.alg.flow.EdmondsKarpMFImpl
 import org.nield.kotlinstatistics.Descriptives
 import org.nield.kotlinstatistics.descriptiveStatistics
+import utils.ProcessFlowGraph
+import utils.WeightedEdge
 
 /**
  * Created by Erdem on 11-Nov-17.
  */
 data class ProcessStats(private val process: Process) {
+    val activityMFOI: Map<String, Double>
+    val stageDecomposer = StageDecomposer(process.flowGraphAsMap)
+
+    init {
+
+        val allUniqueActivityNames = process.traces.flatMap { it.activities }.map { it.name }.distinct()
+        activityMFOI = allUniqueActivityNames.map { activityName ->
+            Pair(activityName, process.traces.asSequence()
+                    .filter { it.containsActivity(activityName) }
+                    .map { it.firstIndexOfActivity(activityName) }
+                    .average())
+        }.sortedByDescending { it.second }.toMap()
+        println(stageDecomposer.sourceMinCut)
+    }
 
 
     fun getActivityTimeMap(pref: ChartPreferences): Map<String, Double>? {
@@ -39,7 +56,7 @@ data class ProcessStats(private val process: Process) {
             }
             pref.performanceMeasure == ACTIVITY_OCCURRENCE -> when {
                 pref.aggregationFunction == SUM -> return activityOcurrenceStats.mapValues { it.value.toDouble() }
-                pref.aggregationFunction == MEAN -> return activityOcurrenceStats.mapValues { it.value.toDouble()/process.traces.size }
+                pref.aggregationFunction == MEAN -> return activityOcurrenceStats.mapValues { it.value.toDouble() / process.traces.size }
                 else -> {
                     null
                 }
@@ -72,11 +89,6 @@ data class ProcessStats(private val process: Process) {
             }
 
 
-
-
-
-
-
     private val processingActivityStats = process.traces.flatMap { it.timeTakingActivities }
             .groupBy { it.name }
             .mapValues {
@@ -89,16 +101,6 @@ data class ProcessStats(private val process: Process) {
             .mapValues {
                 it.value.map { it.waitingTime }.descriptiveStatistics
             }
-
-    private val allUniqueActivityNames = process.traces.flatMap { it.activities }.map { it.name }.distinct()
-
-
-    val activityMFOI = allUniqueActivityNames.map {
-        activityName -> Pair(activityName, process.traces.asSequence()
-            .filter { it.containsActivity(activityName) }
-            .map { it.firstIndexOfActivity(activityName) }
-            .average())
-    }.sortedByDescending { it.second }.toMap()
 
 
 }

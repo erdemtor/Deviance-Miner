@@ -4,6 +4,9 @@ import models.chart.TimeUnit
 import models.process.filtering.ActivityFilterBy
 import models.process.filtering.ActivityFilterBy.*
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer
+import org.apache.commons.math3.ml.distance.CanberraDistance
+import utils.ProcessFlowGraph
+import utils.WeightedEdge
 
 /**
  * Created by Erdem on 11-Nov-17.
@@ -12,9 +15,16 @@ data class Process(val traces: List<Trace>, val name: String) {
 
     var stats: ProcessStats
     val activityIndexMap: Map<String, Int>
-
+    val flowGraph = ProcessFlowGraph()
+    val flowGraphAsMap: Map<String, Map<String, Int>>
     init {
         activityIndexMap = traces.flatMap { it.activities }.map { it.name }.distinct().mapIndexed { index, s -> Pair(s, index) }.toMap()
+        flowGraphAsMap = this.traces.flatMap { it.getActivityBigrams() }
+                .groupBy { it.first }
+                .mapValues { it.value.groupingBy { it.second }.eachCount() }
+
+
+
         stats = ProcessStats(this)
 
     }
@@ -28,7 +38,7 @@ data class Process(val traces: List<Trace>, val name: String) {
 
     fun getClusterVariants(k: Int = 3): List<Process> {
         traces.forEach { it.process = this }
-        val clusters: List<MutableList<Trace>> = KMeansPlusPlusClusterer<Trace>(k, 10000).cluster(traces).map { it.points }
+        val clusters: List<MutableList<Trace>> = KMeansPlusPlusClusterer<Trace>(k, 10000, CanberraDistance()).cluster(traces).map { it.points }
         return clusters.mapIndexed { index, mutableList -> Process(mutableList, this.name + " " + (index+1)) }
                 .apply {
                     forEach { p ->

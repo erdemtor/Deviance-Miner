@@ -5,15 +5,11 @@ import models.process.Event
 import models.process.LifeCycle
 import models.process.Process
 import models.process.Trace
-import models.process.filtering.ActivityFilterBy
-import models.process.filtering.CycleTimeFilterBy
 import org.deckfour.xes.`in`.XesXmlParser
 import org.deckfour.xes.model.XAttributeTimestamp
 import org.deckfour.xes.model.XLog
-import org.zkoss.zhtml.Li
 import java.io.InputStream
 import java.nio.file.Paths
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by Erdem on 11-Nov-17.
@@ -77,7 +73,7 @@ class ProcessUtils {
 
 
 
-    private fun isStartOrCompleteEvent(lifeCycle: String) = listOf("start", "complete").contains(lifeCycle?.trim()?.toLowerCase())
+    private fun isStartOrCompleteEvent(lifeCycle: String) = listOf("start", "complete", "null").contains(lifeCycle?.trim()?.toLowerCase())
 
 
 

@@ -11,13 +11,18 @@ import org.joda.time.Duration
 data class Trace(val id: String) : Clusterable{
 
     override fun getPoint(): DoubleArray {
+        if (clusterPoint != null){
+            return clusterPoint!!
+        }
         val doubleArray = DoubleArray(process.activityIndexMap.size)
         this.activities.groupingBy { it.name }.eachCount().forEach{
             name, count ->
                 doubleArray[process.activityIndexMap[name]!!] = count.toDouble()
         }
-        return doubleArray
+        clusterPoint = doubleArray
+        return clusterPoint!!
     }
+    var clusterPoint: DoubleArray? = null
 
     lateinit var events: List<Event>
     lateinit var activities: List<Activity>
@@ -64,6 +69,7 @@ data class Trace(val id: String) : Clusterable{
     fun firstIndexOfActivity(name: String) =  activities.indexOfFirst { it.name == name }
 
 
+    fun getActivityBigrams() =  activities.map { it.name }.zip(activities.map { it.name }.drop(1))
 
 
 

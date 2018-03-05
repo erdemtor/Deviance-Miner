@@ -32,11 +32,10 @@
             <name>ZK Evaluation Repository</name>
             <url>http://mavensync.zkoss.org/eval</url>
         </repository>
-
-            <repository>
-                <id>local-maven-repo</id>
-                <url>file:////Users/etor/.m2/repository</url>
-            </repository>
+        <repository>
+            <id>local-maven-repo</id>
+            <url>file:////Users/etor/.m2/repository</url>
+        </repository>
 
     </repositories>
     <pluginRepositories>
@@ -51,6 +50,12 @@
             <groupId>org.zkoss.zk</groupId>
             <artifactId>zkbind</artifactId>
             <version>${zk.version}</version>
+        </dependency>
+        <dependency>
+
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.zkoss.chart</groupId>
@@ -125,6 +130,25 @@
             <artifactId>commons-math3</artifactId>
             <version>3.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-bom</artifactId>
+            <version>7.8.0</version>
+            <scope>import</scope>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-engine</artifactId>
+            <version>7.8.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.camunda.bpm.model</groupId>
+            <artifactId>camunda-bpmn-model</artifactId>
+            <version>7.8.0</version>
+        </dependency>
+
 
     </dependencies>
     <build>
