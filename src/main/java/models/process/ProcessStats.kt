@@ -15,7 +15,7 @@ import utils.WeightedEdge
  */
 data class ProcessStats(private val process: Process) {
     val activityMFOI: Map<String, Double>
-    val stageDecomposer = StageDecomposer(process.flowGraphAsMap)
+    var stageDecomposer = StageDecomposer(process.flowGraphAsMap)
 
     init {
 
@@ -29,7 +29,9 @@ data class ProcessStats(private val process: Process) {
         println(stageDecomposer.sourceMinCut)
     }
 
+    fun activateStageDecomposer(pref: ChartPreferences){
 
+    }
     fun getActivityTimeMap(pref: ChartPreferences): Map<String, Double>? {
         return when {
             pref.performanceMeasure == PROCESSING_TIME -> when {

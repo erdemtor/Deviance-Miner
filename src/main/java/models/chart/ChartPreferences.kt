@@ -10,6 +10,7 @@ class ChartPreferences {
     var timeUnit: TimeUnit = TimeUnit.MINUTES
     var percentage = true
     var clusterCount: Int = 1
+    var stageSize: Int = 2
 
 
 }

@@ -1,5 +1,6 @@
 package models.process
 
+import models.chart.ChartPreferences
 import org.jgrapht.alg.ConnectivityInspector
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl
 import utils.ProcessFlowGraph
@@ -10,8 +11,9 @@ class StageDecomposer(val flowGraphAsMap: Map<String, Map<String, Int>>) {
     val sink: String
     val source: String
     val sourceMinCut: Int
-    val minStateSize = 4
+    val minStateSize = 2
     val WT: Double
+    val decomposed: StageDecomposion
 
     init {
         flowGraph = createANewFlow()
@@ -19,16 +21,24 @@ class StageDecomposer(val flowGraphAsMap: Map<String, Map<String, Int>>) {
         sink = flowGraph.vertexSet().minBy { flowGraph.outDegreeOf(it) } ?: ""
         WT = flowGraph.edgeSet().sumByDouble { flowGraph.getEdgeWeight(it) }
         sourceMinCut = GetMinCut(flowGraph).first.toInt()
-        val decomposed = decomposeIt()
+
+        flowGraph.vertexSet().forEach{
+            print(it)
+            print("\t")
+            print(flowGraph.incomingEdgesOf(it).map{flowGraph.getEdgeWeight(it)}.sum())
+            print("\t")
+            print(flowGraph.outgoingEdgesOf(it).map{flowGraph.getEdgeWeight(it)}.sum())
+            println()
+        }
+        decomposed = decomposeIt()
+        print("")
     }
-
-
 
     fun decomposeIt(): StageDecomposion {
         val candidateNodes = selectCandidateNodes()
         var currentBestSD = StageDecomposion(mutableListOf(flowGraph.vertexSet()), mutableListOf())
         var newBestSD = StageDecomposion(mutableListOf(flowGraph.vertexSet()), mutableListOf())
-        var bestCutPoint = Vertex("", listOf())
+        var bestCutPoint = Vertex("", listOf(), 0.0)
         while (!candidateNodes.isEmpty()) {
             for (v in candidateNodes) {
                 val cutStage = currentBestSD.findCutStage(v)
@@ -50,6 +60,7 @@ class StageDecomposer(val flowGraphAsMap: Map<String, Map<String, Int>>) {
                 break
             }
         }
+        currentBestSD.removeTransitionNodesFromStageNodes()
         return currentBestSD
     }
 
@@ -114,8 +125,8 @@ class StageDecomposer(val flowGraphAsMap: Map<String, Map<String, Int>>) {
         v.cutSet.forEach { graph.removeEdge(it.first, it.second) }
         val connectivityInspector = ConnectivityInspector(graph)
         val sourceSubGraph = connectivityInspector.connectedSetOf(source)
-        val preStage = cutStage.plus(sourceSubGraph) as Stage
-        val sucStage = cutStage.minus(sourceSubGraph) as Stage
+        val preStage = cutStage.intersect(sourceSubGraph).plus(v.v) as Stage
+        val sucStage = cutStage.minus(preStage) as Stage
 
         return Pair(preStage, sucStage)
     }
@@ -128,7 +139,9 @@ class StageDecomposer(val flowGraphAsMap: Map<String, Map<String, Int>>) {
         return flowGraph.vertexSet()
                 .asSequence()
                 .filter { it != sink && it != source }
-                .map { Vertex(it, findMinCutWithoutTheGivenVertex(it).second) }
+                .map{Pair(it, findMinCutWithoutTheGivenVertex(it))}
+                .filter{it.second.first < sourceMinCut && it.second.first > 0}
+                .map { Vertex(it.first, it.second.second, it.second.first) }
                 .toMutableList()
     }
 
@@ -166,6 +179,13 @@ typealias Stage = MutableSet<String>
 
 data class TransitionNode(val node: String, val from: Stage, val to: Stage)
 
-data class StageDecomposion(val stages: MutableList<Stage>, val transitionNodes: MutableList<TransitionNode>)
+data class StageDecomposion(val stages: MutableList<Stage>, val transitionNodes: MutableList<TransitionNode>){
+    fun removeTransitionNodesFromStageNodes(){
+        transitionNodes.forEach{
+            it.from.remove(it.node)
+            it.to.remove(it.node)
+        }
+    }
+}
 
-data class Vertex(val v: String, val cutSet: List<Pair<String, String>>)
+data class Vertex(val v: String, val cutSet: List<Pair<String, String>>, val minCut: Double)
