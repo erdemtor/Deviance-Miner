@@ -38,6 +38,11 @@ class ProcessUtils {
 
 
 
+    fun updateGranularity(){
+        this.variants.values.flatMap { it }.forEach{it.updateGranularity(chartPreferences.granularityLevel)}
+        mainVariants.mapValues { it.value.granularity = chartPreferences.granularityLevel }
+    }
+
 
     fun updateClusterCount(){
         this.variants = mainVariants.mapValues {it.value.getClusterVariants(chartPreferences.clusterCount) }.toMutableMap()
@@ -69,6 +74,7 @@ class ProcessUtils {
 
     fun removeVariant(name: String) {
         this.variants.remove(name)
+        this.mainVariants.remove(name)
     }
 
 

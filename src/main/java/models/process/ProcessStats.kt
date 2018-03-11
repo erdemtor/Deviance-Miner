@@ -3,6 +3,7 @@ package models.process
 import models.chart.AggregationFunction.MEAN
 import models.chart.AggregationFunction.SUM
 import models.chart.ChartPreferences
+import models.chart.Granularity
 import models.chart.PerformanceMeasure.*
 import org.jgrapht.alg.flow.EdmondsKarpMFImpl
 import org.nield.kotlinstatistics.Descriptives
@@ -14,24 +15,6 @@ import utils.WeightedEdge
  * Created by Erdem on 11-Nov-17.
  */
 data class ProcessStats(private val process: Process) {
-    val activityMFOI: Map<String, Double>
-    var stageDecomposer = StageDecomposer(process.flowGraphAsMap)
-
-    init {
-
-        val allUniqueActivityNames = process.traces.flatMap { it.activities }.map { it.name }.distinct()
-        activityMFOI = allUniqueActivityNames.map { activityName ->
-            Pair(activityName, process.traces.asSequence()
-                    .filter { it.containsActivity(activityName) }
-                    .map { it.firstIndexOfActivity(activityName) }
-                    .average())
-        }.sortedByDescending { it.second }.toMap()
-        println(stageDecomposer.sourceMinCut)
-    }
-
-    fun activateStageDecomposer(pref: ChartPreferences){
-
-    }
     fun getActivityTimeMap(pref: ChartPreferences): Map<String, Double>? {
         return when {
             pref.performanceMeasure == PROCESSING_TIME -> when {
@@ -79,30 +62,55 @@ data class ProcessStats(private val process: Process) {
         }
     }
 
+    fun getGroupByelement(activity: Activity): String{
+       return when(this.process.granularity){
+            Granularity.ACTIVITY -> activity.name
+            Granularity.STAGE -> activity.belongsToStage
+        }
+    }
+
 
     val activityOcurrenceStats = process.traces.flatMap { it.timeTakingActivities }
-            .groupingBy { it.name }.eachCount()
+            .groupingBy(this::getGroupByelement).eachCount()
 
 
     val totalActivityStats = process.traces.flatMap { it.timeTakingActivities }
-            .groupBy { it.name }
+            .groupBy(this::getGroupByelement)
             .mapValues {
                 it.value.map { it.waitingTime + it.processingTime }.descriptiveStatistics
             }
 
 
     private val processingActivityStats = process.traces.flatMap { it.timeTakingActivities }
-            .groupBy { it.name }
+            .groupBy(this::getGroupByelement)
             .mapValues {
                 it.value.map { it.processingTime }.descriptiveStatistics
             }
 
 
     private val waitingActivityStats = process.traces.flatMap { it.timeTakingActivities }
-            .groupBy { it.name }
+            .groupBy(this::getGroupByelement)
             .mapValues {
                 it.value.map { it.waitingTime }.descriptiveStatistics
             }
+
+
+    val allUniqueActivityNames = process.traces.flatMap { it.activities }.map (this::getGroupByelement).distinct()
+    val activityMFOI: List<String>
+        get() {
+            val endNumber = Regex("""\s\d+$""")
+            return when(this.process.granularity){
+                    Granularity.ACTIVITY ->  allUniqueActivityNames
+                            .map { activityName ->
+                                Pair(activityName, process.traces.asSequence().filter { it.containsActivity(activityName) }
+                                        .map { it.firstIndexOfActivity(activityName) }
+                                        .average())
+                            }.sortedByDescending { it.second }.map { it.first }
+                    Granularity.STAGE -> allUniqueActivityNames.map { Pair(it, endNumber.find(it)?.value?.toDouble() ?: -1.0) }.
+                            sortedByDescending { it.second }.map { it.first }
+                }
+
+        }
 
 
 }

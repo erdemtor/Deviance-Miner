@@ -12,6 +12,16 @@
                     <auxheader colspan="2" label="Chart Preferences"/>
                 </auxhead>
                 <rows>
+                    <row>
+                        <label value="Granularity Level:"/>
+                        <combobox id="granularityLevelBox" model="${miner$composer.granularityLevelModel}"
+                                  autodrop="true">
+                            <template name="model">
+                                <comboitem label="${each}"/>
+                            </template>
+                        </combobox>
+                    </row>
+
                     <row >
                         <label value="Performance Measure:"/>
                         <combobox id="timeAspectBox" model="${miner$composer.timeAspectModel}"

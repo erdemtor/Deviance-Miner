@@ -7,6 +7,7 @@ import org.joda.time.Duration
 data class Activity(val name: String, val startTime: DateTime, val endTime: DateTime) {
     constructor(name: String, time: DateTime): this(name,time, time)
 
+    var belongsToStage: String = ""
     private var enablementTime = startTime
     var timeUnit: TimeUnit = TimeUnit.MINUTES
 

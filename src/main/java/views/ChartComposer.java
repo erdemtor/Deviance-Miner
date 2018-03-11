@@ -2,10 +2,7 @@ package views;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import models.chart.AggregationFunction;
-import models.chart.ChartPreferences;
-import models.chart.PerformanceMeasure;
-import models.chart.TimeUnit;
+import models.chart.*;
 import models.process.Process;
 import models.process.filtering.ActivityFilterBy;
 import models.process.filtering.CycleTimeFilterBy;
@@ -62,6 +59,9 @@ public class ChartComposer extends SelectorComposer<Window> {
     Combobox timeUnitBox;
 
     @Wire
+    Combobox granularityLevelBox;
+
+    @Wire
     Combobox variantsBox;
 
     
@@ -111,7 +111,15 @@ public class ChartComposer extends SelectorComposer<Window> {
     ListModel<String> statisticalAspectModel = new ListModelList(Arrays.stream(AggregationFunction.values()).map(Object::toString).collect(toList()));
     ListModel<String> timeUnitModel = new ListModelList(Arrays.stream(models.chart.TimeUnit.values()).map(Object::toString).collect(toList()));
     ListModel<Integer> oneToTwenty = new ListModelList(IntStream.rangeClosed(1, 20).boxed().collect(toList()));
+    ListModel<String> granularityLevelModel = new ListModelList(Arrays.stream(models.chart.Granularity.values()).map(Object::toString).collect(toList()));
 
+    public ListModel<String> getGranularityLevelModel() {
+        return granularityLevelModel;
+    }
+
+    public void setGranularityLevelModel(ListModel<String> granularityLevelModel) {
+        this.granularityLevelModel = granularityLevelModel;
+    }
 
     ListModel<String> activeVariants = new ListModelList(this.processUtils.getVariants().keySet().stream().map(Object::toString).collect(toList()));
 
@@ -170,7 +178,6 @@ public class ChartComposer extends SelectorComposer<Window> {
     }
 
     private void updateSessionData(){
-
         Sessions.getCurrent().setAttribute(ProcessDetails, this.processUtils);
     }
 
@@ -192,7 +199,6 @@ public class ChartComposer extends SelectorComposer<Window> {
         String statisticalAspect = statisticalAspectBox.getSelectedItem().getLabel();
         chartPreferences.setAggregationFunction(AggregationFunction.valueOf(statisticalAspect));
         updateSessionData();
-
         Executions.sendRedirect(null);
     }
 
@@ -206,9 +212,7 @@ public class ChartComposer extends SelectorComposer<Window> {
             Map<String, Double> activityTime = process.getStats().getActivityTimeMap(chartPreferences);
             process.getStats()
                     .getActivityMFOI()
-                    .entrySet()
                     .stream()
-                    .map(Map.Entry::getKey)
                     .forEach((String activity) -> model.setValue(activity, process.getName(), activityTime.get(activity)));
         }));
 
@@ -226,13 +230,23 @@ public class ChartComposer extends SelectorComposer<Window> {
         isPercentage.addEventListener("onCheck", this::updatePreferences);
         clusterCountBox.addEventListener("onChange", this::updateClusterCount);
         timeUnitBox.addEventListener("onChange", this::updateTimeUnit);
+        granularityLevelBox.addEventListener("onChange", this::updateGranularityLevel);
         removeVariant.addEventListener("onClick", this::removeVariant);
         variantUploader.addEventListener("onUpload", (EventListener<UploadEvent>) event -> addVariant(event));
         ((ListModelList<String>) timeAspectModel).addToSelection(chartPreferences.getPerformanceMeasure().toString());
         ((ListModelList<String>) statisticalAspectModel).addToSelection(chartPreferences.getAggregationFunction().toString());
         ((ListModelList<String>) timeUnitModel).addToSelection(chartPreferences.getTimeUnit().toString());
+        ((ListModelList<String>) granularityLevelModel).addToSelection(chartPreferences.getGranularityLevel().toString());
         ((ListModelList<Integer>) oneToTwenty).addToSelection(chartPreferences.getClusterCount());
         isPercentage.setChecked(chartPreferences.getPercentage());
+    }
+
+    private void updateGranularityLevel(Event event){
+        ChartPreferences chartPreferences = processUtils.getChartPreferences();
+        Granularity newGranularity = Granularity.valueOf(granularityLevelBox.getSelectedItem().getLabel());
+        chartPreferences.setGranularityLevel(newGranularity);
+        processUtils.updateGranularity();
+        updatePreferences(event);
     }
 
     private void updateTimeUnit(Event event) {
@@ -268,16 +282,6 @@ public class ChartComposer extends SelectorComposer<Window> {
         chartBar.getLegend().setReversed(true);
         chartBar.getPlotOptions().getSeries().setStacking(chartPreferences.getPercentage() ? "percent" : "normal");
         chartBar.getCredits().setEnabled(false);
-/*
-        BoxPlotModel boxPlotData = arrangeDataWithRespectToChartPreferencesForBoxPlot();
-        chartBox.getLegend().setEnabled(false);
-
-
-        int columnCountDeviant = boxPlotData.getDataCount("deviant");
-        String[] xLabelNames = IntStream.range(0, columnCountDeviant).mapToObj(i -> boxPlotData.getName("deviant", i)).toArray(String[]::new);
-        chartBox.setModel(boxPlotData);
-        chartBox.getXAxis().setCategories(xLabelNames);*/
-
     }
 }
 
