@@ -1,7 +1,4 @@
 package models.chart
-
-import org.zkoss.zk.ui.Session
-
 class ChartPreferences {
 
 
