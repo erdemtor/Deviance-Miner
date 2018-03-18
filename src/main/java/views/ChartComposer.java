@@ -282,47 +282,7 @@ public class ChartComposer extends SelectorComposer<Window> {
         chartBar.getLegend().setReversed(true);
         chartBar.getPlotOptions().getSeries().setStacking(chartPreferences.getPercentage() ? "percent" : "normal");
         chartBar.getCredits().setEnabled(false);
+        if (model.getCategories().isEmpty())
+            chartBar.setVisible(false);
     }
 }
-
-
-
-
-/*
-    private BoxPlotModel arrangeDataWithRespectToChartPreferencesForBoxPlot() {
-        BoxPlotModel model = new DefaultBoxPlotModel();
-
-
-        subProcesses.forEach(process -> {
-            Map<String, Descriptives> activityDescriptiveMap = process.getStats().getActivityDescriptivesMap(chartPreferences);
-            process.getStats()
-                    .getActivityMFOI().entrySet().stream().map(Map.Entry::getKey).forEach((String activity) ->{
-                        process
-
-                    });
-
-
-        });
-        final Map<String, Descriptives> normalActivityDescriptiveMap = normal.getStats().getActivityDescriptivesMap(chartPreferences);
-        final Map<String, Descriptives> deviantActivityDescriptivesMap = deviant.getStats().getActivityDescriptivesMap(chartPreferences);
-        deviantActivityDescriptivesMap.keySet().stream().filter(normalActivityDescriptiveMap::containsKey).forEach(
-                (activity) -> {
-                    Descriptives descriptives = normalActivityDescriptiveMap.get(activity);
-                    model.addValue("normal", activity,
-                            descriptives.getMin(),
-                            descriptives.percentile(25),
-                            descriptives.percentile(50),
-                            descriptives.percentile(75),
-                            descriptives.getMax());
-                    descriptives = deviantActivityDescriptivesMap.get(activity);
-                    model.addValue("deviant", activity,
-                            descriptives.getMin(),
-                            descriptives.percentile(25),
-                            descriptives.percentile(50),
-                            descriptives.percentile(75),
-                            descriptives.getMax());
-
-                });
-        return model;
-    }
-*/

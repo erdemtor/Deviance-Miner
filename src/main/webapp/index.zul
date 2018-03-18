@@ -1,19 +1,50 @@
 <zk>
     <window id="miner" apply="views.ChartComposer">
-        <zk forEach=""></zk>
         <charts id="chartBar" type="bar" title="Timeline Chart"/>
-        <!--	<charts id="chartBox" type="boxplot" title="BoxPlot Distribution"/>
--->
-
-
         <div align="center">
-            <grid width="50%">
+            <html>
+                <p>
+                    The tool enables users to visualize a process using the event logs in order to display the distinctions between the deviant and the normal cases.
+                    It accepts the event logs in XES format and draws the "time diagram" which displays the cycle time of one or more processes decomposed into either activity level or stage level which is a logical combination of the activities within the process.
+                    The diagram form provides multiple functionalities including which duration aspect of the activities or stages to be considered to draw the chart.
+                    The activities or stages are displayed in the order that they occurred in the logs.
+                    Moreover, the tool provides an option of clustering the event log so that similar traces are put together yielding a possible list of deviant traces if the user cannot provide an XES file containing only the deviant cases or simply is not aware of what kind of deviance might have happened.
+                </p>
+            </html>
+        </div>
+        <popup id="granularityPopup">
+            <label value="Should the process be considered as sequence of activities or decomposed into stages and presented so."></label>
+        </popup>
+        <popup id="performancePopup">
+            <label value="Choose the which aspect of the activities or stages to be considered in statistical analysis."></label>
+        </popup>
+        <popup id="aggregationPopup">
+            <label value="Choose how to aggregate the performance measures."></label>
+        </popup>
+        <popup id="clusterPopup">
+            <label value="In case you don't have deviant traces as a separate file, choose how many clusters should be created."></label>
+        </popup>
+        <popup id="timeUnitPopup">
+            <label value="In case of desire to see the absolute values choose the time unit of the numbers."></label>
+        </popup>
+        <popup id="relativePopup">
+            <label value="Should granularity units and the graph constructed in percentages or absolute values."></label>
+        </popup>
+        <popup id="newVariantPopup">
+            <label value="Add a new .xes file which belongs to the same process to compare different variants."></label>
+        </popup>
+        <popup id="removeVariantPopup">
+            <label value="Select the variant you added and remove it from the system."></label>
+        </popup>
+        <div align="center">
+            <grid width="60%">
                 <auxhead>
                     <auxheader colspan="2" label="Chart Preferences"/>
                 </auxhead>
                 <rows>
-                    <row>
-                        <label value="Granularity Level:"/>
+                    <row tooltip="granularityPopup">
+                        <label value="Granularity Level:" />
+
                         <combobox id="granularityLevelBox" model="${miner$composer.granularityLevelModel}"
                                   autodrop="true">
                             <template name="model">
@@ -22,8 +53,9 @@
                         </combobox>
                     </row>
 
-                    <row >
-                        <label value="Performance Measure:"/>
+                    <row  tooltip="performancePopup">
+
+                        <label value="Performance Measure:"></label>
                         <combobox id="timeAspectBox" model="${miner$composer.timeAspectModel}"
                                   autodrop="true">
                             <template name="model">
@@ -31,9 +63,9 @@
                             </template>
                         </combobox>
                     </row>
-                    <row >
+                    <row tooltip="aggregationPopup">
 
-                    <label value="Aggregation Function:"/>
+                    <label value="Aggregation Function:" />
                         <combobox id="statisticalAspectBox" model="${miner$composer.statisticalAspectModel}"
                                   autodrop="true">
                             <template name="model">
@@ -41,9 +73,9 @@
                             </template>
                         </combobox>
                     </row>
-                    <row >
+                    <row tooltip="clusterPopup">
 
-                    <label value="Cluster Count:"/>
+                    <label value="Cluster Count:" />
                         <combobox id="clusterCountBox" model="${miner$composer.oneToTwenty}"
                                   autodrop="true">
                             <template name="model">
@@ -51,7 +83,7 @@
                             </template>
                         </combobox>
                     </row>
-                    <row >
+                    <row tooltip="timeUnitPopup" >
 
                     <label value="Time Unit:"/>
                         <combobox id="timeUnitBox" model="${miner$composer.timeUnitModel}"
@@ -61,17 +93,17 @@
                             </template>
                         </combobox>
                     </row>
-                    <row >
+                    <row tooltip="relativePopup" >
 
                     <label value="Relative values?"></label>
                         <checkbox id="isPercentage"></checkbox>
                     </row>
-                    <row >
+                    <row tooltip="newVariantPopup" >
 
-                    <label value="Add a new Variant"/>
+                    <label value="Add a new Variant" />
                         <button id="variantUploader" label="Choose File" upload="true,maxsize=100000000"/>
                     </row>
-                    <row >
+                    <row tooltip="removeVariantPopup" >
 
                     <combobox id="variantsBox" model="${miner$composer.activeVariants}"
                                   autodrop="true">
